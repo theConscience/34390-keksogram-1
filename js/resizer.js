@@ -88,14 +88,14 @@
       // чего-либо с другой обводкой.
 
       // Толщина линии.
-      this._ctx.lineWidth = 6;
+      //this._ctx.lineWidth = 6;
       // Цвет обводки.
       this._ctx.strokeStyle = '#ffe753';
       // Размер штрихов. Первый элемент массива задает длину штриха, второй
       // расстояние между соседними штрихами.
-      this._ctx.setLineDash([15, 10]);
+      //this._ctx.setLineDash([15, 10]);
       // Смещение первого штриха от начала линии.
-      this._ctx.lineDashOffset = 7;
+      //this._ctx.lineDashOffset = 7;
 
       // Сохранение состояния канваса.
       // Подробней см. строку 132.
@@ -113,11 +113,69 @@
 
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
+      /*
+       this._ctx.strokeRect(
+       (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+       (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+       this._resizeConstraint.side - this._ctx.lineWidth / 2,
+       this._resizeConstraint.side - this._ctx.lineWidth / 2);
+       */
+
+      // рамка из точек
+      var penPositionX = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
+      var penPositionY = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
+      var squareSide = this._resizeConstraint.side - this._ctx.lineWidth / 2;
+      this._ctx.lineWidth = 1;
+
+      var verticalMinPosition = penPositionY;
+      var verticalMaxPosition = penPositionY + squareSide;
+      var horizontalMinPosition = penPositionX;
+      var horizontalMaxPosition = penPositionX + squareSide;
+
+      while (penPositionY < verticalMaxPosition) {
+        this._ctx.beginPath();
+
+        this._ctx.moveTo(penPositionX, penPositionY);
+        this._ctx.arc(penPositionX, penPositionY, 1, 0, Math.PI * 2, true);
+
+        this._ctx.stroke();
+        penPositionY = penPositionY + 6;
+      }
+      penPositionY = penPositionY - 6;
+
+      while (penPositionX < horizontalMaxPosition) {
+        this._ctx.beginPath();
+
+        this._ctx.moveTo(penPositionX, penPositionY);
+        this._ctx.arc(penPositionX, penPositionY, 1, 0, Math.PI * 2, true);
+
+        this._ctx.stroke();
+        penPositionX = penPositionX + 6;
+      }
+      penPositionX = penPositionX - 6;
+
+      while (penPositionY > verticalMinPosition) {
+        this._ctx.beginPath();
+
+        this._ctx.moveTo(penPositionX, penPositionY);
+        this._ctx.arc(penPositionX, penPositionY, 1, 0, Math.PI * 2, true);
+
+        this._ctx.stroke();
+        penPositionY = penPositionY - 6;
+      }
+
+      while (penPositionX > horizontalMinPosition) {
+        this._ctx.beginPath();
+
+        this._ctx.moveTo(penPositionX, penPositionY);
+        this._ctx.arc(penPositionX, penPositionY, 1, 0, Math.PI * 2, true);
+
+        this._ctx.stroke();
+        penPositionX = penPositionX - 6;
+      }
+
+
+
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
@@ -126,6 +184,23 @@
       // некорректно сработает даже очистка холста или нужно будет использовать
       // сложные рассчеты для координат прямоугольника, который нужно очистить.
       this._ctx.restore();
+
+      // затемнение фона вокруг рамки
+      var heightOfHorizontalMuteZone = (this._container.height - (this._resizeConstraint.side - this._ctx.lineWidth / 2)) / 2 - this._ctx.lineWidth;
+      var widthOfVerticalMuteZone = (this._container.width - (this._resizeConstraint.side - this._ctx.lineWidth / 2)) / 2 - this._ctx.lineWidth;
+
+      this._ctx.fillStyle = 'rgba(0, 0, 0,.8)';
+      this._ctx.fillRect(0, 0, this._container.width, heightOfHorizontalMuteZone);
+      this._ctx.fillRect(this._container.width - widthOfVerticalMuteZone - 7, heightOfHorizontalMuteZone, widthOfVerticalMuteZone + 7, this._container.height - heightOfHorizontalMuteZone * 2 - 7);
+      this._ctx.fillRect(0, this._container.height - heightOfHorizontalMuteZone - 7, this._container.width, heightOfHorizontalMuteZone + 7);
+      this._ctx.fillRect(0, heightOfHorizontalMuteZone, widthOfVerticalMuteZone, this._container.height - heightOfHorizontalMuteZone * 2 - 7);
+
+      // размеры картинки
+      this._ctx.fillStyle = "#fff";
+      this._ctx.textAlign = "center";
+      this._ctx.font = '15px sans-serif';
+      this._ctx.fillText(this._image.naturalWidth + ' х ' + this._image.naturalHeight, this._container.width / 2, heightOfHorizontalMuteZone - 10);
+
     },
 
     /**
